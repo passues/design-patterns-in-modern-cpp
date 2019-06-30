@@ -1,34 +1,4 @@
-#include "exercise.h"
-
-
-struct ContainsIntegers
-{
-    ContainsIntegers(){}
-    int sum()
-    {
-        int res = 0;
-        for(auto item: *this)
-            res += item.value;
-        return res;
-    }
-};
-struct SingleValue:public ContainsIntegers
-{
-    SingleValue(int value):value(value){}
-    SingleValue * begin(){return this;}
-    SingleValue* end(){return this +1;}
-    int value;
-};
-
-struct ManyValues:public ContainsIntegers
-{
-    ManyValues(){};
-    void add(int item){
-        object.push_back(item);
-    }
-    vector<int> objects;
-};
-
+#include "composite.h"
 
 int sum(const vector<ContainsIntegers*> items)
 {
@@ -36,4 +6,14 @@ int sum(const vector<ContainsIntegers*> items)
     for(auto item: items)
     res += item->sum();
     return res;
+}
+
+int main(){
+    SingleValue single_value{1};
+    ManyValues other_values;
+    
+    other_values.add(2);
+    other_values.add(3);
+
+    std::cout << sum({&single_value, &other_values}) << std::endl;
 }
