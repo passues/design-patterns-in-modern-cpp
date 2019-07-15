@@ -2,9 +2,7 @@
 #include <string>
 using namespace std;
 
-
 struct Creature;
-
 
 struct StatQuery
 {
@@ -15,11 +13,12 @@ struct StatQuery
       
   }
 };
+
 struct Game
 {
   vector<Creature*> creatures;
-  void query_adds(StatQuery& q);
 };
+inline void query_adds(Game& game, StatQuery&q);
 struct Creature
 {
 protected:
@@ -33,6 +32,7 @@ public:
   virtual int get_defense() = 0;
 };
 
+
 class Goblin : public Creature
 {
 public:
@@ -42,14 +42,14 @@ public:
 
   int get_attack() override {
       StatQuery q{StatQuery::Statistic::attack};
-      game.query_adds(q);
-      return q.result+base_attack;
+      query_adds(game, q);
+      return q.result + base_attack;
   }
 
   int get_defense() override {
       StatQuery q{StatQuery::Statistic::defense};
-      game.query_adds(q);
-      return q.result + base_defense;
+      query_adds(game, q);
+      return q.result;
   }
 };
 
@@ -58,23 +58,24 @@ class GoblinKing : public Goblin
 public:
   GoblinKing(Game &game) : Goblin(game, 3, 3) {}
 };
-
-void Game::query_adds(StatQuery& q)
+inline void query_adds(Game& game, StatQuery&q)
 {
-  int attack_adds = 0;
-  int defense_adds = 0;
-  for(auto obj:creatures)
-  {
-      if(dynamic_cast<Goblin*>(obj))
-        attack_adds += 1;
+
+    int attack_adds = 0;
+    int defense_adds = 0;
+    for(auto obj:game.creatures)
+    {
       if(dynamic_cast<GoblinKing*>(obj))
+        attack_adds += 1;
+      if(dynamic_cast<Goblin*>(obj))
         defense_adds += 1;
-  }
-  if(q.statistic == StatQuery::Statistic::attack)
+    }
+    if(q.statistic == StatQuery::Statistic::attack)
     q.result = attack_adds;
-  if(q.statistic == StatQuery::Statistic::defense)
+    if(q.statistic == StatQuery::Statistic::defense)
     q.result = defense_adds;
-}
+};
+
 int main()
 {
 }
